@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Tone from 'tone';
-import combinations from './lib/combinations';
-import { generateMnemonic } from './lib/index';
+import { generateMnemonic, mnemonicToSeedHex } from './lib/index';
 
 class App extends Component {
   state = {
-    key: []
+    key: [],
+    seedHex: '',
   }
   generateSynth = (notes, synth) => {
     let offset = 0;
@@ -20,19 +20,38 @@ class App extends Component {
   play = () => {
     const synth = new Tone.Synth().toMaster();
     debugger;
-    this.generateSynth(this.state.key, synth);
+    this.generateSynth(this.state.key.split(" "), synth);
+  }
+
+  generateSeedHex = () => {
+    const seedHex = mnemonicToSeedHex(this.state.key);
+    debugger;
+    this.setState({seedHex});
   }
 
   generateKey = () => {
-    const key = generateMnemonic().split(" ");;
+    const key = generateMnemonic();
+    this.generateSeedHex(key)
     this.setState({key})
   }
 
 render() {
+  const { key, seedHex } = this.state;
+  console.log(key.length)
   return (
-    <div>
-      <button onClick={() => this.generateKey()}> Generate Secret Key</button>
-      <button onClick={() => this.play()}> Play Secret Key</button>
+    <div className="wrapper">
+      <div className="controls">
+        <button onClick={() => this.generateKey()}> Generate Secret Key</button>
+        <button onClick={() => this.play()} disabled={!key.length}> Play Secret Key</button>
+      </div>
+      <div className="seedHex">
+        <h3 className="header">Seed Hex</h3>
+        <span className="code">{seedHex}</span>
+      </div>
+      <div className="notes">
+        <h3 className="header">Notes</h3>
+        <span className="code">{key}</span>
+      </div>
     </div>
   );
 }

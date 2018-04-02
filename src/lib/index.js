@@ -4,9 +4,9 @@ import createHash from 'create-hash';
 import {Buffer} from 'safe-buffer';
 import {pbkdf2Sync} from 'pbkdf2';
 
-const INVALID_MNEMONIC = 'Invalid mnemonic'
+// const INVALID_MNEMONIC = 'Invalid mnemonic'
 const INVALID_ENTROPY = 'Invalid entropy'
-const INVALID_CHECKSUM = 'Invalid mnemonic checksum'
+// const INVALID_CHECKSUM = 'Invalid mnemonic checksum'
 
 const salt = (password) => 'mnemonic' + (password || '');
 
