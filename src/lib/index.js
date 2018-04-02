@@ -1,26 +1,3 @@
-// var fs = require('file-system');
-
-// Array.prototype.flatMap = function (f)
-// {
-//   return this.reduce ((acc, x) => acc.concat (f (x)), [])
-// }
-
-// const combinations = (choices, n = 1) =>
-//   n === 0
-//     ? [[]]
-//     : combinations (choices, n - 1) .flatMap (comb =>
-//         choices .map (c => [ c, ...comb ]))
-
-        
-// const faces =
-//   [ 'C0', 'D', 'E', 'F', 'G', 'A', 'B', 'C1']
-
-// fs.writeFile('combinations.js', JSON.stringify(combinations (faces, 5)), (err) => {  
-
-//     if (err) throw err;
-//     console.log('Lyric saved!');
-// });
-
 import combinations from './combinations';
 import randomBytes from 'randombytes';
 import createHash from 'create-hash';
@@ -65,26 +42,26 @@ const entropyToMnemonic = (entropy) => {
     if (entropy.length > 32) throw new TypeError(INVALID_ENTROPY)
     if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY)
 
-    var entropyBits = bytesToBinary([].slice.call(entropy))
-    var checksumBits = deriveChecksumBits(entropy)
+   const entropyBits = bytesToBinary([].slice.call(entropy))
+   const checksumBits = deriveChecksumBits(entropy)
 
-    var bits = entropyBits + checksumBits
-    var chunks = bits.match(/(.{1,11})/g)
-    var chords = chunks.map((binary) => {
+   const bits = entropyBits + checksumBits
+   const chunks = bits.match(/(.{1,11})/g)
+   const chords = chunks.map((binary) => {
         const index = binaryToByte(binary)
-        return combinations[index]
+        return combinations[index].join(' ')
     })
 
     return chords.join(' ')
 }
 
-const generateMnemonic = (strength = 128 ) => {
+export const generateMnemonic = (strength = 128 ) => {
     if (strength % 32 !== 0) throw new TypeError(INVALID_ENTROPY)
     return entropyToMnemonic(randomBytes(strength / 8))
 }
 
-const mnemonicToSeedHex = (mnemonic, password) => mnemonicToSeed(mnemonic, password).toString('hex');
+export const mnemonicToSeedHex = (mnemonic, password) => mnemonicToSeed(mnemonic, password).toString('hex');
 
-const mnemonic = generateMnemonic();
+// const mnemonic = generateMnemonic();
 
-console.log(mnemonicToSeedHex(mnemonic).length)
+// console.log(mnemonicToSeedHex(mnemonic).length)
