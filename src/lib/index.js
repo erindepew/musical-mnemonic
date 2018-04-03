@@ -62,6 +62,21 @@ export const generateMnemonic = (strength = 128 ) => {
 
 export const mnemonicToSeedHex = (mnemonic, password) => mnemonicToSeed(mnemonic, password).toString('hex');
 
-// const mnemonic = generateMnemonic();
-
-// console.log(mnemonicToSeedHex(mnemonic).length)
+export const compressMnemonic = (mnemonic) => {
+    let currentIndex;
+    let current = false;
+    let compressedMnemonic = []; 
+    mnemonic.split(" ").map(function(note, index) {
+        if (!current) {
+            currentIndex = index;
+            current = note; 
+        }
+        else if (note !== current && current) {
+            compressedMnemonic.push({note: current, length: index - currentIndex});
+            currentIndex = index;
+            current = note;
+        }
+ 
+    });
+    return compressedMnemonic;
+}
