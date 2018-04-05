@@ -40,7 +40,7 @@ class App extends Component {
   }
 
 render() {
-  const { key, seedHex, receiveInput } = this.state;
+  const { key, seedHex } = this.state;
   return (
     <div className="wrapper">
       <div className="controls">
