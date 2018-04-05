@@ -1,4 +1,4 @@
-import fs from 'file-system';
+var fs = require('file-system');
 
 
 Array.prototype.flatMap = function (f)
@@ -13,9 +13,20 @@ n === 0
         choices .map (c => [ c, ...comb ]))
 
         
-const faces = [ 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5']
+const faces = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G']
 
-fs.writeFile('./combinations.js', JSON.stringify(combinations (faces, 5)), (err) => {  
+const maxExponent = 5;
+
+let permutations = []; 
+
+for (i = 1; i <= maxExponent; i++) {
+    const combo = combinations(faces, i)
+    permutations = permutations.concat(combo.flatMap(item =>[item.join('')]));
+}
+
+const uniquePermutations = [... new Set(permutations)];
+
+fs.writeFile('./combinations.js', JSON.stringify(uniquePermutations), (err) => {  
     if (err) throw err;
     console.log('Combinations saved!');
 });

@@ -1,44 +1,27 @@
 import React, { Component } from 'react';
 import Tone from 'tone';
-import { generateMnemonic, mnemonicToSeedHex, compressMnemonic } from './lib/index';
+import { generateMnemonic, mnemonicToSeedHex, compressMnemonic, validateMnemonic } from './lib/index';
 
 class App extends Component {
   state = {
     key: '',
-    compressedKey: [],
     seedHex: '',
-    receiveInput: false,
   }
-  generateSynth = (notes, synth) => {
+
+  generateSynth = () => {
+    const synth = new Tone.PolySynth(6, Tone.Synth).toMaster();
     let offset = 0;
+    const notes = compressMnemonic(this.state.key);
     notes.forEach((note) => {
       setTimeout(function(){
-        synth.triggerAttackRelease(note, "4n")
+        synth.triggerAttackRelease(note.note, note.length);
       }, offset);    
     offset += 250;
     });
   }
 
-  generateCompressedSynth = (notes, synth) => {
-    let offset = 0;
-    debugger;
-    notes.forEach((note) => {
-      const length = 4 / note.length;
-      setTimeout(function(){
-        synth.triggerAttackRelease(note.note, `${length}n`)
-      }, offset);    
-    offset += (1000 / length);
-    });
-  }
-
   play = (compressed) => {
-    const synth = new Tone.Synth().toMaster();
-    if (compressed) {
-      this.generateCompressedSynth(this.state.compressedKey, synth);
-    }
-    else {
-      this.generateSynth(this.state.key.split(" "), synth);
-    }
+    this.generateSynth(this.state.key.split(" "));
   }
 
   generateSeedHex = () => {
@@ -49,16 +32,11 @@ class App extends Component {
   generateKey = () => {
     const key = generateMnemonic();
     this.generateSeedHex(key)
-    const compressedKey = compressMnemonic(key);
-    this.setState({key, compressedKey})
+    this.setState({key})
   }
 
-  inputSecretKey = () => {
-    this.setState({receiveInput: true})
-  }
-
-  toggleInputSecretKey = (value) => {
-    this.setState({receiveInput: !value})
+  validate = () => {
+    validateMnemonic(this.state.key);
   }
 
 render() {
@@ -68,11 +46,7 @@ render() {
       <div className="controls">
         <button onClick={() => this.generateKey()}> Generate Secret Key</button>
         <button onClick={() => this.play(false)} disabled={!key.length}> Play Secret Key</button>
-        <button onClick={() => this.play(true)} disabled={!key.length}> Play Compressed Secret Key</button>
-        <div className={receiveInput ? 'toggleOn' : 'toggleOff'} onClick={() => this.toggleInputSecretKey(receiveInput)}>
-          Input Secret Key: 
-          <div className="toggle"> </div>
-        </div>
+        <button onClick={() => this.validate()} disabled={!key.length}> Validate</button>
       </div>
       <div className="seedHex">
         <h3 className="header">Seed Hex</h3>
