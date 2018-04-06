@@ -6,6 +6,9 @@ class App extends Component {
   state = {
     key: '',
     seedHex: '',
+    validateKey: '',
+    success: false,
+    error: false,
   }
 
   generateSynth = () => {
@@ -36,17 +39,35 @@ class App extends Component {
   }
 
   validate = () => {
-    validateMnemonic(this.state.key);
+    const isValid = validateMnemonic(this.state.validateKey);
+    if (isValid) {
+      this.setState({ success: true})
+    }
+    else {
+      this.setState({ error: true})
+    }
+    setTimeout(() => {
+      this.setState({ success: false, error: false });
+      }, 1000); 
+  }
+
+  handleChange = (e) => {
+    this.setState({ validateKey: e.target.value})
   }
 
 render() {
-  const { key, seedHex } = this.state;
+  const { key, seedHex, success, error } = this.state;
   return (
     <div className="wrapper">
       <div className="controls">
         <button onClick={() => this.generateKey()}> Generate Secret Key</button>
         <button onClick={() => this.play(false)} disabled={!key.length}> Play Secret Key</button>
-        <button onClick={() => this.validate()} disabled={!key.length}> Validate</button>
+        { error ? <div class="error"> Key is invalid</div> : ''}
+        { success ? <div class="success"> Key is valid</div> : ''}
+        { !success && !error ?  <div className="validate">
+          <input type="text" className="input" onChange={(e) => this.handleChange(e)}/>
+          <button onClick={() => this.validate()} disabled={!key.length}> Validate</button>
+        </div> : ''}
       </div>
       <div className="seedHex">
         <h3 className="header">Seed Hex</h3>

@@ -73,3 +73,29 @@ button:hover {
     text-align: left;
     padding: 50px 50px 0;
 }
+
+.input {
+    border-radius: 5px;
+    border: none;
+    width: 75%;
+    height: 40px;
+}
+
+.error, 
+.success {
+    width: calc(100% - 100px);
+    height: 35px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 15px;
+}
+
+.error {
+    background-color: red;
+}
+
+.success {
+    background-color: green;
+}
