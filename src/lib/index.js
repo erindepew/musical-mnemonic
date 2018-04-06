@@ -1,4 +1,5 @@
 import combinations from './combinations';
+import scales from './scales';
 import randomBytes from 'randombytes';
 import createHash from 'create-hash';
 import {Buffer} from 'safe-buffer';
@@ -8,11 +9,11 @@ const INVALID_MNEMONIC = 'Invalid mnemonic'
 const INVALID_ENTROPY = 'Invalid entropy'
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum'
 
-const salt = (passchord) => 'mnemonic' + (passchord || '');
+const salt = (password) => 'mnemonic' + (password || '');
 
-const mnemonicToSeed = (mnemonic, passchord) => {
+const mnemonicToSeed = (mnemonic, password) => {
   const mnemonicBuffer = Buffer.from(mnemonic)
-  const saltBuffer = Buffer.from(salt(passchord))
+  const saltBuffer = Buffer.from(salt(password))
 
   return pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
@@ -59,9 +60,9 @@ export const generateMnemonic = (strength = 128 ) => {
     return entropyToMnemonic(randomBytes(strength / 8))
 }
 
-export const mnemonicToSeedHex = (mnemonic, passchord) => mnemonicToSeed(mnemonic, passchord).toString('hex');
+export const mnemonicToSeedHex = (mnemonic, password) => mnemonicToSeed(mnemonic, password).toString('hex');
 
-export const compressMnemonic = (mnemonic) => {
+export const compressMnemonic = (mnemonic, scaleKey) => {
     const concat = (x,y) => x.concat(y);
     const flatMap = (f,xs) => xs.map(f).reduce(concat, []);
     return flatMap((chunk) => {
@@ -93,7 +94,8 @@ export const compressMnemonic = (mnemonic) => {
                 if (notes.indexOf(note) !== index || note >= notes[index - 1]) {
                     base = base + 1;
                 }
-                chord.push(`${note}${base}`);
+                const occidental = scales[scaleKey][note];
+                chord.push(`${note}${occidental}${base}`);
              });
              return [{note: [`${checksum[notes.length - 1]}4`], length: "4n"}, { note: chord, length: "4n" }]
         }
