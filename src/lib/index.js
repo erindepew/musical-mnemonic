@@ -80,13 +80,17 @@ export const compressMnemonic = (mnemonic) => {
             if (scale[note] !== 0 && scale[note] === notes.length) {
                 isChord = false;
             }
-            if (scale[note] !== 0 && scale[note] !== notes.length && scale[note] >= 3 ) {
-                base = 6 - scale[note];
-            }
         });
         if (isChord) {
+            let octaves = 1;
             notes.forEach((note, index) => {
-                if (notes.indexOf(note) !== index) {
+                if(note >= notes[index - 1]) {
+                    octaves = octaves + 1;
+                }
+            });
+            base = base - Math.round(octaves / 2) 
+            notes.forEach((note, index) => {
+                if (notes.indexOf(note) !== index || note >= notes[index - 1]) {
                     base = base + 1;
                 }
                 chord.push(`${note}${base}`);
